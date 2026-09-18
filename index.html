@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bichometria</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 30px auto; padding: 20px; background: #f0f0f0; }
+       .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px #0001; margin-bottom: 20px; }
+        input, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; }
+        button { background: #0088cc; color: white; font-weight: bold; border: none; cursor: pointer; }
+        button:hover { background: #006699; }
+    </style>
+</head>
+<body>
+    <h1>🐾 Bichometria</h1>
+
+    <div class="card">
+        <h3>Cadastrar Pet Perdido</h3>
+        <input id="nome" placeholder="Nome do Pet">
+        <input id="tipo" placeholder="Tipo (Cachorro, Gato)">
+        <input id="tutor" placeholder="Seu Nome">
+        <input id="chatid" placeholder="Seu ID do Telegram (/meuid no bot)">
+        <button onclick="cadastrar()">Cadastrar e Gerar Código</button>
+        <p id="resultadoCad"></p>
+    </div>
+
+    <div class="card">
+        <h3>Buscar Pet por Código</h3>
+        <input id="codigoBusca" placeholder="Ex: BICH-1234">
+        <button onclick="buscar()">Buscar</button>
+        <p id="resultadoBusca"></p>
+    </div>
+
+<script>
+    const API = "http://127.0.0.1:8000";
+
+    async function cadastrar() {
+        const res = await fetch(API + "/cadastrar", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                nome: document.getElementById('nome').value,
+                tipo: document.getElementById('tipo').value,
+                tutor_nome: document.getElementById('tutor').value,
+                tutor_chat_id: document.getElementById('chatid').value
+            })
+        });
+        const data = await res.json();
+        document.getElementById('resultadoCad').innerText = "CÓDIGO GERADO: " + data.codigo + " -> Já pode buscar no bot do Telegram!";
+    }
+
+    async function buscar() {
+        const codigo = document.getElementById('codigoBusca').value;
+        const res = await fetch(API + "/buscar/" + codigo);
+        const data = await res.json();
+        if(data.erro) {
+            document.getElementById('resultadoBusca').innerText = "Não encontrado";
+        } else {
+            document.getElementById('resultadoBusca').innerText = `Encontrado: ${data.nome} (${data.tipo}) do tutor ${data.tutor_nome}`;
+        }
+    }
+</script>
+</body>
+</html>

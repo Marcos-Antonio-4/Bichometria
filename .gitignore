@@ -1,0 +1,4 @@
+__pycache__/
+bichos.db
+.env
+venv/
